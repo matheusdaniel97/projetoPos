@@ -15,6 +15,7 @@ FastAPI, SQLModel e SQLite.
 ├── tests/
 │   └── test_produtos.py
 ├── .gitignore
+├── .env.example
 ├── README.md
 └── requirements.txt
 ```
@@ -23,6 +24,7 @@ FastAPI, SQLModel e SQLite.
 - `app/database.py`: configura o arquivo SQLite e fornece sessões ao FastAPI.
 - `app/models.py`: define os campos e as validações dos produtos com SQLModel.
 - `tests/test_produtos.py`: testa a API usando um SQLite em memória, separado do banco local.
+- `.env.example`: exemplo de configuração local sem credenciais.
 - `requirements.txt`: lista as dependências necessárias.
 
 ## Visão geral do projeto
@@ -74,10 +76,13 @@ Instale as dependências:
 ```powershell
 python -m pip install --upgrade pip
 pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
 Se o comando `py -3.11` não estiver disponível, use `python -m venv .venv`
 com uma instalação Python 3.11 ou superior.
+O arquivo `.env` é ignorado pelo Git; compartilhe o `.env.example`, nunca valores
+locais que não devam ser publicados.
 
 ## Executar a API
 
@@ -89,6 +94,8 @@ uvicorn app.main:app --reload
 
 A API estará disponível em <http://127.0.0.1:8000>. Na primeira inicialização,
 a tabela é criada automaticamente no arquivo `produtos.db`, na pasta do projeto.
+O caminho do banco pode ser configurado pela variável `DATABASE_URL` no arquivo
+`.env`; o exemplo usa `sqlite:///./produtos.db`.
 
 ## Documentação interativa e endpoints
 
