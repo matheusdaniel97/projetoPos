@@ -25,6 +25,37 @@ FastAPI, SQLModel e SQLite.
 - `tests/test_produtos.py`: testa a API usando um SQLite em memória, separado do banco local.
 - `requirements.txt`: lista as dependências necessárias.
 
+## Visão geral do projeto
+
+O diagrama mostra como uma requisição passa pela API até chegar ao banco de
+dados. A tabela é criada na inicialização da aplicação; entradas inválidas
+recebem `422` e IDs inexistentes recebem `404`.
+
+```mermaid
+flowchart TD
+    Cliente["Cliente HTTP ou Swagger UI (/docs)"]
+    API["FastAPI<br/>app/main.py"]
+    Validacao{"Dados válidos?<br/>SQLModel"}
+    Sessao["Sessão de banco<br/>app/main.py"]
+    SQLite[("SQLite<br/>produtos.db")]
+    Resposta["Resposta HTTP<br/>201, 200 ou 204"]
+    Erro422["422<br/>Dados inválidos"]
+    Erro404["404<br/>Produto não encontrado"]
+
+    Inicio["Inicialização da API"] --> Tabela["Cria tabela se necessário"]
+    Tabela --> SQLite
+    Cliente -->|"POST, GET, PUT ou DELETE /produtos"| API
+    API --> Validacao
+    Validacao -->|"Não"| Erro422
+    Validacao -->|"Sim"| Sessao
+    Sessao --> SQLite
+    SQLite -->|"Operação concluída"| Resposta
+    SQLite -->|"ID não encontrado"| Erro404
+    Resposta --> Cliente
+    Erro422 --> Cliente
+    Erro404 --> Cliente
+```
+
 ## Requisitos
 
 - Python 3.11 ou superior
